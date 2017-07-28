@@ -6,7 +6,6 @@ const expressValidator = require('express-validator')
 const fs = require('fs')
 const words = fs.readFileSync('/usr/share/dict/words', 'utf-8').toLowerCase().split('\n')
 
-
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(expressValidator())
@@ -21,6 +20,7 @@ app.get('/', (req, res) => {
   res.render('home')
 })
 
+
 app.post('/', (req, res) => {
   // function that sorts through the 'words file' and picks a word at random.
   console.log(randomWord)
@@ -29,15 +29,23 @@ app.post('/', (req, res) => {
   let secretWord = randomWord.split('')
   console.log(secretWord)
 
-  let answer = secretWord.map(currentItem => {
-    if (req.body.guess === currentItem) {
-      return currentItem
-    } else {
-      return '_'
-    }
-  }).join('')
-  console.log({ answer })
+  let answer = secretWord
+    .map(currentItem => {
+      if (req.body.guess === currentItem) {
+        return currentItem
+      // } else if (=) {
+      //   return currentItem
+      } else {
+        return '_'
+      }
+    })
+    .join('')
   res.render('home')
+  console.log({ answer })
+})
+
+app.listen(3000, () => {
+  console.log('may the force be with you')
 })
 
 // let answer = secretWord.forEach((currentItem) => {
@@ -49,7 +57,3 @@ app.post('/', (req, res) => {
 //     res.render('home', notCorrect)
 //   }
 // })
-
-app.listen(3000, () => {
-  console.log('may the force be with you')
-})
