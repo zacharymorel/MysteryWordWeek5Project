@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>The Game!</title>
+  </head>
+  <body>
+    <h3>Mystery Word</h3>
+    <h3>You have _ classes left!</h3>
+
+    <p>{{guess}}</p>
+    <form class="theGuess" action="/" method="post">
+        <label for="guess"></label>
+        <input type="text" name="guess" placeholder="Guess here!">
+        <button type="submit" name="button">Make a Guess!</button>
+    </form>
+    <p>letters Guessed:</p>
+    <span class="loop"></span>
+  </body>
+</html>
