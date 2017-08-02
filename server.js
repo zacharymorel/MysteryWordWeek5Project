@@ -32,8 +32,9 @@ app.get('/', (request, response) => {
     request.session.guessedLetters = []
   }
   console.log("the word is " , request.session.superSecretWord)
+  let count = 8
 
-  let answer = request.session.superSecretWord.split('')
+  let guess = request.session.superSecretWord.split('')
   .map(letter => {
     if (request.session.guessedLetters.indexOf(letter) >= 0 ) {
       return letter
@@ -42,11 +43,15 @@ app.get('/', (request, response) => {
     }
   })
   .join('')
-  console.log('the word so far is ', answer)
+  if (guess === '_') {
+    count = count - 1
+  }
+  console.log('the word so far is ', guess)
   response.render('home', {
     superSecretWord: request.session.superSecretWord,
-    guess: answer,
-    guessed: request.session.guess})
+    guess: guess,
+    guessed: request.session.guessedLetters,
+    count: count})
 })
 
 
@@ -58,6 +63,7 @@ app.post('/Create', (request, response) => {
   const guessedLetters = request.session.guessedLetters || []
   guessedLetters.push(request.body.guess)
 
+  // console.log(request.session.guess);
   request.session.guessedLetters = guessedLetters
   response.redirect('/')
 })
