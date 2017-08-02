@@ -6,15 +6,18 @@
   </head>
   <body>
     <h3>Mystery Word</h3>
-    <h3>You have _ classes left!</h3>
+    <p>the real word is {{superSecretWord}}</p>
+    <h4>You have _ classes left!</h4>
 
-    <p>{{guess}}</p>
-    <form class="theGuess" action="/" method="post">
+
+    <form class="theGuess" action="/Create" method="post">
         <label for="guess"></label>
         <input type="text" name="guess" placeholder="Guess here!">
         <button type="submit" name="button">Make a Guess!</button>
     </form>
-    <p>letters Guessed:</p>
+    <br>
+    <p>Your Word to Guess: {{#guess}}{{.}}{{/guess}}</p>
+    <p>letters Guessed: {{#guessed}}{{.}}{{/guessed}}</p>
     <span class="loop"></span>
   </body>
 </html>

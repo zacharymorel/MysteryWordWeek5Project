@@ -3,6 +3,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const mustacheExpress = require('mustache-express')
 const expressValidator = require('express-validator')
+const expressSession = require('express-session')
 const fs = require('fs')
 const words = fs.readFileSync('/usr/share/dict/words', 'utf-8').toLowerCase().split('\n')
 
@@ -14,46 +15,53 @@ app.engine('mst', mustacheExpress())
 app.set('views', './views')
 app.set('view engine', 'mst')
 
-const randomWord = words[Math.floor(Math.random() * words.length)]
+app.use(
+  expressSession({
+    secret: 'jar jar binks',
+    resave: false,
+    saveUninitialized: true
+  })
+)
 
-app.get('/', (req, res) => {
-  res.render('home')
+app.get('/', (request, response) => {
+  // put the random word in session if it doesnt exist
+  if (!request.session.superSecretWord){
+    request.session.superSecretWord = words[Math.floor(Math.random() * words.length)]
+  }
+  if (!request.session.guessedLetters){
+    request.session.guessedLetters = []
+  }
+  console.log("the word is " , request.session.superSecretWord)
+
+  let answer = request.session.superSecretWord.split('')
+  .map(letter => {
+    if (request.session.guessedLetters.indexOf(letter) >= 0 ) {
+      return letter
+    } else {
+      return '_'
+    }
+  })
+  .join('')
+  console.log('the word so far is ', answer)
+  response.render('home', {
+    superSecretWord: request.session.superSecretWord,
+    guess: answer,
+    guessed: request.session.guess})
 })
 
 
-app.post('/', (req, res) => {
-  // function that sorts through the 'words file' and picks a word at random.
-  console.log(randomWord)
-  // let secretWord = []
-  // secretWord.push(randomWord)
-  let secretWord = randomWord.split('')
-  console.log(secretWord)
 
-  let answer = secretWord
-    .map(currentItem => {
-      if (req.body.guess === currentItem) {
-        return currentItem
-      // } else if (=) {
-      //   return currentItem
-      } else {
-        return '_'
-      }
-    })
-    .join('')
-  res.render('home')
-  console.log({ answer })
+
+app.post('/Create', (request, response) => {
+  // incoming from the form on the client side, we are getting a letter
+  // store that incoming in session, in a list of characters
+  const guessedLetters = request.session.guessedLetters || []
+  guessedLetters.push(request.body.guess)
+
+  request.session.guessedLetters = guessedLetters
+  response.redirect('/')
 })
 
 app.listen(3000, () => {
   console.log('may the force be with you')
 })
-
-// let answer = secretWord.forEach((currentItem) => {
-//   if (req.body.guess === currentItem) {
-//     res.render('home', req.body.guess)
-//   } else {
-//     let notCorrect = req.body.guess
-//     notCorrect = '_'
-//     res.render('home', notCorrect)
-//   }
-// })
